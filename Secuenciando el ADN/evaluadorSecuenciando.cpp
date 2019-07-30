@@ -18,6 +18,7 @@ int preguntas = 0;
 
 int medir(string cad)
 {
+  //cout << "!!!\nmedir was called = " << cad << "\n!!!\n";
   preguntas++;
   int i=0;
   for (int j=0;j<int(secret.size()); j++)
@@ -34,7 +35,7 @@ void letter_amount(int N, string s){
   string test;
   forn(i,s.size()-1){
     test.clear();
-    int high = maxn;
+    int high = maxn - sum;
     int low = 0;
     while(high > low+1){
       int m = (high+low)/2;
@@ -70,25 +71,42 @@ bool checkTree(string c){
 }
 
 string mergeString(string a, string b){
+  //cout << "Started mergestring with " << a << " and " << b << "\n----------------\n";
   if(a.size() == 0){
+    //cout << "First string was empty...\n";
     return b;
   }
   if(b.size() == 0){
+    //cout << "Second string was empty...\n";
     return a;
   }
-  for(int bit = b.rbegin(),int ait = a.rbegin(); bit >= 0 && ait >= 0; bit--){
+  //cout << "b_iterator = " << b.size()-1 << endl << "a_iterator = " << a.size() << endl << endl; 
+  int bit = b.size()-1;
+  for(int ait = a.size(); bit >= 0 && ait >= 0; bit--){
+    //cout << a << endl;
     a.insert(ait,b,bit,1);
-    for(;checkTree(a);){
+    //cout << a << endl << "-------" << endl;
+    for(;!checkTree(a);){
+      //cout << "loop, a = ";
       ait--;
       char aux = a[ait];
       a[ait] = a[ait+1];
       a[ait+1] = aux;
+      //cout << a << endl;
     }
   }
-  if(bit != 0){
+  if(bit > 0){
     a.insert(0,b,0,bit);
   }
   return a;
+}
+
+string splitMergers(vector<string> &m, int low, int high){
+  //cout << "splitMergers : low = " << low << " high " << high << endl;
+  if(high <= low + 1){
+    return m[low];
+  }
+  return mergeString(splitMergers(m,low,(low+high)/2),splitMergers(m,((low+high)/2),high));
 }
 
 string secuenciar(int N, string s)
@@ -114,11 +132,7 @@ string secuenciar(int N, string s)
     cout << a << endl;
   }
   */
-  /*answer = mergers[0];
-  for(int i = 1; i < mergers.size(); i++){
-    answer = mergeString(answer,mergers[i]);
-  }*/
-  return "G";
+  return splitMergers(mergers,0,mergers.size());
 }
 
 int main()
