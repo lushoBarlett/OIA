@@ -76,12 +76,19 @@ string mergeString(string a, string b){
   if(b.size() == 0){
     return a;
   }
-  string check = a + b;
-  if(checkTree(check)){
-    return check;
+  for(int bit = b.rbegin(),int ait = a.rbegin(); bit >= 0 && ait >= 0; bit--){
+    a.insert(ait,b,bit,1);
+    for(;checkTree(a);){
+      ait--;
+      char aux = a[ait];
+      a[ait] = a[ait+1];
+      a[ait+1] = aux;
+    }
   }
-
-  return check;
+  if(bit != 0){
+    a.insert(0,b,0,bit);
+  }
+  return a;
 }
 
 string secuenciar(int N, string s)
