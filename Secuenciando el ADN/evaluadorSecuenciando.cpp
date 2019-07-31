@@ -1,6 +1,7 @@
 // Include practico para compilar con geany: puede ser necesario borrarlo en otros entornos.
 #include <iostream>
 #include <string>
+#include <algorithm>
 #include <vector>
 #include <assert.h>
 #include <unordered_map>
@@ -101,12 +102,16 @@ string mergeString(string a, string b){
   return a;
 }
 
-string splitMergers(vector<string> &m, int low, int high){
+/*string splitMergers(vector<string> &m, int low, int high){
   //cout << "splitMergers : low = " << low << " high " << high << endl;
   if(high <= low + 1){
     return m[low];
   }
   return mergeString(splitMergers(m,low,(low+high)/2),splitMergers(m,((low+high)/2),high));
+}*/
+
+bool bySize(string a, string b){
+  return a.size() < b.size();
 }
 
 string secuenciar(int N, string s)
@@ -125,6 +130,7 @@ string secuenciar(int N, string s)
   forn(i,s.size()){
     mergers.push_back(string(amounts[s[i]],s[i]));
   }
+  sort(mergers.begin(),mergers.end(),bySize);
   /*for(const auto &a : checked){
     cout << a.first << " : " << a.second << endl;
   }
@@ -132,7 +138,14 @@ string secuenciar(int N, string s)
     cout << a << endl;
   }
   */
-  return splitMergers(mergers,0,mergers.size());
+  /*forn(i,mergers.size()){
+    cout << mergers[i].size() << " ";
+  }*/
+  answer = mergers[0];
+  forn(i,mergers.size()-1){
+    answer = mergeString(answer,mergers[i+1]);
+  }
+  return answer;
 }
 
 int main()
