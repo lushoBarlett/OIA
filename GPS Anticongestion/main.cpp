@@ -11,6 +11,7 @@ const int maxn = 1e3+1;
 using namespace std;
 
 struct edge{
+  int id;
   int target;
   long long weight;
   bool operator <(const edge b) const {
@@ -21,23 +22,22 @@ struct edge{
 /// adjacency list
 vector<edge> G[maxn];
 priority_queue<edge> Q;
-int V[maxn][maxn];
+int V[maxm];
 
 vector<long long> gps(int N,int M,int inicio,int fin,int K,vector<int> from,vector<int> to,vector<int> in){
   vector<long long> answer;
   /// random bolsa
   /// make adjacency list
   forn(i,M){
-    G[from[i]].push_back({to[i], in[i]});
+    G[from[i]].push_back({i,to[i], in[i]});
   }
   /// push starting point with distance 0
   /// null => start : in 0
-  Q.push({inicio,0});
+  Q.push({-1,inicio,0});
   while(Q.size()){
     //cout << Q.size() << endl;
     /// pop smaller
-    edge top;
-    top = Q.top();
+    edge top = Q.top();
     Q.pop();
     /// push if target
     if(top.target == fin && int(answer.size()) < K){
@@ -47,13 +47,13 @@ vector<long long> gps(int N,int M,int inicio,int fin,int K,vector<int> from,vect
     forn(i,G[top.target].size()){
       /// push the current point's (top.target) neighbors and its distance to beginning (current + next)
       /// maximum K pushes for a given edge
-      /*cout << "current edge {" << top.target << "," << G[top.target][i].target << "} visited: " << V[top.target][G[top.target][i].target]+1 << " times\n";
-      if(V[top.target][G[top.target][i].target]+1 == K){
-        cout << "will stop using this edge\n";
-      }*/
-      if(V[top.target][G[top.target][i].target] < K){
-        Q.push( {G[top.target][i].target , G[top.target][i].weight + top.weight} );
-        V[top.target][G[top.target][i].target]++;
+      //cout << "current edge (id:" << G[top.target][i].id << ") {" << top.target << "," << G[top.target][i].target << "} visited: " << V[G[top.target][i].id]+1 << " times\n";
+      //if(V[G[top.target][i].id]+1 == K){
+        //cout << "will stop using this edge\n";
+      //}
+      if(V[G[top.target][i].id] < K){
+        Q.push( {G[top.target][i].id, G[top.target][i].target , G[top.target][i].weight + top.weight} );
+        V[G[top.target][i].id]++;
       }
     }
   }
