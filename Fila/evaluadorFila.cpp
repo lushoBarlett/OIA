@@ -48,16 +48,11 @@ int fila(vector<Fecha> orden, vector<int> &enojados)
   vector<anger> angers;
   // global variable for sorting purposes
   order = orden;
-  // minIndex = 2
-  // 54 7 1 9 13 6 (orden)
-  // n  n 0 n n  n (answer)
-
-  // 2 5 1 3 4 0 (index)
   vector<int> ordered;
   forn(i,orden.size()){
     ordered.push_back(i);
   }
-  // de mas joven a mas viejo
+  // de mas joven a mas viejo (tested : works)
   sort(ordered.begin(),ordered.end(),byOrden);
   forn(i,ordered.size()){
     minIndex = ordered[i] < minIndex ? ordered[i] : minIndex;
@@ -65,11 +60,24 @@ int fila(vector<Fecha> orden, vector<int> &enojados)
       angers.push_back({ordered[i],(ordered[i] - minIndex)});
     }
   }
+  // de mas enojado a menos enojado (resolves == with index order) (tested : works)
   sort(angers.begin(),angers.end(),byAnger);
   forn(i,angers.size()){
     enojados.push_back(angers[i].index+1);
   }
-  return angers[0].angery;
+
+  // debugging
+  cout << "\nINDECES\n";
+  for(auto &a : ordered){
+    cout << a << " ";
+  }
+  cout << "\nANGERS\n";
+  for(auto &a : angers){
+    cout << a.index << ":" << a.angery << " ";
+  }
+  if(angers.size())
+    return angers[0].angery;
+  return 0;
 }
 
 int main()
