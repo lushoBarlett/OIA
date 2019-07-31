@@ -1,8 +1,9 @@
 #include <iostream>
 #include <vector>
+#include <algorithm>
 #include <queue>
 #include <time.h>
-#define forn(i,N) for(int i = 0; i < N ; i++)
+#define forn(i,N) for(int i = 0; i < int(N) ; i++)
 
 const int maxm = 1e4;
 const int maxn = 1e3+1;
@@ -32,20 +33,25 @@ vector<long long> gps(int N,int M,int inicio,int fin,int K,vector<int> from,vect
   /// push starting point with distance 0
   /// null => start : in 0
   Q.push({inicio,0});
-  while(Q.size() && answer.size() < K){
-    /// pop smaller if visited less than K times
+  while(Q.size()){
+    //cout << Q.size() << endl;
+    /// pop smaller
     edge top;
     top = Q.top();
     Q.pop();
     /// push if target
-
-    if(top.target == fin){
+    if(top.target == fin && int(answer.size()) < K){
       answer.push_back(top.weight);
     }
     /// push neighbors
     forn(i,G[top.target].size()){
       /// push the current point's (top.target) neighbors and its distance to beginning (current + next)
-      if(V[top.target][G[top.target][i].target] <= K){
+      /// maximum K pushes for a given edge
+      /*cout << "current edge {" << top.target << "," << G[top.target][i].target << "} visited: " << V[top.target][G[top.target][i].target]+1 << " times\n";
+      if(V[top.target][G[top.target][i].target]+1 == K){
+        cout << "will stop using this edge\n";
+      }*/
+      if(V[top.target][G[top.target][i].target] < K){
         Q.push( {G[top.target][i].target , G[top.target][i].weight + top.weight} );
         V[top.target][G[top.target][i].target]++;
       }
@@ -95,12 +101,5 @@ int main()
   forn(i,answer.size()){
     cout << answer[i] << " ";
   }
-  forn(i,maxn){
-    forn(j,maxn){
-      if(V[i][j])
-      cout << V[i][j] << " ";
-    }
-  }
-
   return 0;
 }
