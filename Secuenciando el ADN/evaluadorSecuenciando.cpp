@@ -3,6 +3,8 @@
 #include <string>
 #include <algorithm>
 #include <vector>
+#include <queue>
+#include <functional>
 #include <assert.h>
 #include <unordered_map>
 #define forn(i,N) for(int i = 0; i < int(N); i++)
@@ -12,7 +14,6 @@ using namespace std;
 const int maxn = 1000;
 
 unordered_map<char,int> amounts;
-unordered_map<string,bool> checked;
 
 string secret;
 int preguntas = 0;
@@ -29,6 +30,7 @@ int medir(string cad)
 }
 
 void letter_amount(int N, string s){
+  cout << "SIZE = " << N;
   int sum = 0;
   forn(i,s.size()){
     amounts.insert({s[i],0});
@@ -36,64 +38,61 @@ void letter_amount(int N, string s){
   string test;
   forn(i,s.size()-1){
     test.clear();
-    int high = maxn - sum;
+    int high = N - sum;
     int low = 0;
-    while(high > low+1){
-      int m = (high+low)/2;
-      test.resize(m,s[i]);
-      if(medir(test)){
-        low = m;
-      }
-      else{
-        high = m;
-      }
+    cout << "high : " << high << " low : " << low << endl;
+    // if there is 1 letter unknown, each of the untested letters has to be tested at least once
+    // until there are no letters left, then nothing will happen for real
+    if(high == 1){
+      test.push_back(s[i]);
+      sum += amounts[s[i]] = medir(test);
+      //cout << "There is " << amounts[s[i]] << " repetition of " << s[i] << endl;
     }
-    sum += amounts[s[i]] = low;
+    else{
+      while(high > low+1){
+        int m = (high+low)/2;       
+        test.resize(m,s[i]);
+        if(medir(test)){
+          low = m;
+        }
+        else{
+          high = m;
+        }
+      }
+      sum += amounts[s[i]] = low;
+      //cout << "There are " << low << " repetitions of " << s[i] << endl;
+    }
   }
   amounts[s.back()] = N - sum;
-}
-
-/// checks in the most efficient way I could come up with if a string is valid
-bool checkTree(string c){
-  //cout << "checkTree(" << c << ")" << endl;
-  /// if already checked, return it
-  if(checked.find(c) != checked.end() || c.size() < 2){
-    assert(c.size() > 0);
-    return true;
+  for(auto &a : amounts){
+    if(a.second)
+    cout << a.first << " : " << a.second << endl;
   }
-  /// call the check on first half of string and second half of string
-  /// if both are true, store medir(c), else store false and return it
-  //cout << fh << "/" << sh << endl;
-  if(checkTree(c.substr(0,c.size()/2)) && checkTree(c.substr(c.size()/2))){
-    checked.insert({c,medir(c)});
-    return checked[c];
-  }
-  return false;
 }
 
 string mergeString(string a, string b){
-  //cout << "Started mergestring with " << a << " and " << b << "\n----------------\n";
+  cout << "Started mergestring with " << a << " and " << b << "\n----------------\n";
   if(a.size() == 0){
-    //cout << "First string was empty...\n";
+    cout << "First string was empty...\n";
     return b;
   }
   if(b.size() == 0){
-    //cout << "Second string was empty...\n";
+    cout << "Second string was empty...\n";
     return a;
   }
-  //cout << "b_iterator = " << b.size()-1 << endl << "a_iterator = " << a.size() << endl << endl; 
+  cout << "b_iterator = " << b.size()-1 << endl << "a_iterator = " << a.size() << endl << endl; 
   int bit = b.size()-1;
   for(int ait = a.size(); bit >= 0 && ait >= 0; bit--){
-    //cout << a << endl;
+    cout << a << endl;
     a.insert(ait,b,bit,1);
-    //cout << a << endl << "-------" << endl;
-    for(;!checkTree(a);){
-      //cout << "loop, a = ";
+    cout << a << endl << "-------" << endl;
+    for(;!medir(a);){
+      cout << "loop, a = ";
       ait--;
       char aux = a[ait];
       a[ait] = a[ait+1];
       a[ait+1] = aux;
-      //cout << a << endl;
+      cout << a << endl;
     }
   }
   if(bit > 0){
@@ -102,17 +101,11 @@ string mergeString(string a, string b){
   return a;
 }
 
-/*string splitMergers(vector<string> &m, int low, int high){
-  //cout << "splitMergers : low = " << low << " high " << high << endl;
-  if(high <= low + 1){
-    return m[low];
+struct Comparator{
+  bool operator ()(const string &a, const string &b) const {
+    return a.size() > b.size();
   }
-  return mergeString(splitMergers(m,low,(low+high)/2),splitMergers(m,((low+high)/2),high));
-}*/
-
-bool bySize(string a, string b){
-  return a.size() < b.size();
-}
+};
 
 string secuenciar(int N, string s)
 {
@@ -126,26 +119,21 @@ string secuenciar(int N, string s)
     }
     return answer;
   }
-  vector<string> mergers;
+  priority_queue<string,vector<string>,Comparator> mergers;
   forn(i,s.size()){
-    mergers.push_back(string(amounts[s[i]],s[i]));
+    mergers.push(string(amounts[s[i]],s[i]));
   }
-  sort(mergers.begin(),mergers.end(),bySize);
-  /*for(const auto &a : checked){
-    cout << a.first << " : " << a.second << endl;
+  for(;mergers.size() > 1;){
+    //cout << "FOR\n";
+    string first = mergers.top();
+    //cout << first << endl;
+    mergers.pop();
+    string second = mergers.top();
+    //cout << second << endl;
+    mergers.pop();
+    mergers.push(mergeString(first,second));
   }
-  for(const auto &a : mergers){
-    cout << a << endl;
-  }
-  */
-  /*forn(i,mergers.size()){
-    cout << mergers[i].size() << " ";
-  }*/
-  answer = mergers[0];
-  forn(i,mergers.size()-1){
-    answer = mergeString(answer,mergers[i+1]);
-  }
-  return answer;
+  return mergers.top();
 }
 
 int main()
