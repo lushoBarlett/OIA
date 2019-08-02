@@ -38,30 +38,22 @@ void letter_amount(int N, string s){
   string test;
   forn(i,s.size()-1){
     test.clear();
-    int high = N - sum;
+    // [;) notation
+    int high = N - sum + 1;
     int low = 0;
-    cout << "high : " << high << " low : " << low << endl;
-    // if there is 1 letter unknown, each of the untested letters has to be tested at least once
-    // until there are no letters left, then nothing will happen for real
-    if(high == 1){
-      test.push_back(s[i]);
-      sum += amounts[s[i]] = medir(test);
-      //cout << "There is " << amounts[s[i]] << " repetition of " << s[i] << endl;
-    }
-    else{
-      while(high > low+1){
-        int m = (high+low)/2;       
-        test.resize(m,s[i]);
-        if(medir(test)){
-          low = m;
-        }
-        else{
-          high = m;
-        }
+    //cout << "high : " << high << " low : " << low << endl;
+    while(high > low+1){
+      int m = (high+low)/2;
+      test.resize(m,s[i]);
+      if(medir(test)){
+        low = m;
       }
-      sum += amounts[s[i]] = low;
-      //cout << "There are " << low << " repetitions of " << s[i] << endl;
+      else{
+        high = m;
+      }
     }
+    sum += amounts[s[i]] = low;
+    //cout << "There are " << low << " repetitions of " << s[i] << endl;
   }
   amounts[s.back()] = N - sum;
   for(auto &a : amounts){
@@ -80,7 +72,7 @@ string mergeString(string a, string b){
     cout << "Second string was empty...\n";
     return a;
   }
-  cout << "b_iterator = " << b.size()-1 << endl << "a_iterator = " << a.size() << endl << endl; 
+  cout << "b_iterator = " << b.size()-1 << endl << "a_iterator = " << a.size() << endl << endl;
   int bit = b.size()-1;
   for(int ait = a.size(); bit >= 0 && ait >= 0; bit--){
     cout << a << endl;
