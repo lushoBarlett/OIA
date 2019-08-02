@@ -10,13 +10,13 @@ const int maxn = 3*1e5;
 struct Fecha
 {
   int dia, mes, anno;
-  
+
   bool operator <(const Fecha b) const {
     return (anno > b.anno) || (anno == b.anno && mes > b.mes) || (anno == b.anno && mes == b.mes && dia > b.dia);
   }
 
   bool operator ==(const Fecha b) const {
-    return (anno == b.anno) && (mes == b.mes) && (dia == b.dia); 
+    return (anno == b.anno) && (mes == b.mes) && (dia == b.dia);
   }
 
   bool operator >(const Fecha b) const {
@@ -67,14 +67,14 @@ int fila(vector<Fecha> orden, vector<int> &enojados)
   }
 
   // debugging
-  cout << "\nINDECES\n";
+  /*cout << "\nINDECES\n";
   for(auto &a : ordered){
     cout << a << " ";
   }
   cout << "\nANGERS\n";
   for(auto &a : angers){
     cout << a.index << ":" << a.angery << " ";
-  }
+  }*/
   if(angers.size())
     return angers[0].angery;
   return 0;
